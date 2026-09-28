@@ -1,3 +1,4 @@
+import os
 import time
 import json
 from sys import argv
@@ -23,7 +24,7 @@ def save_data(path: Path, data: list) -> list:
 def reset_data(entry: dict) -> None:
     entry["start_time"] = time.time()
 
-def seconds(days, hours, minutes, seconds):
+def seconds(days: int, hours: int, minutes: int, seconds: int) -> int:
     return (
         days * SECONDS_PER_DAY +
         hours * SECONDS_PER_HOUR +
@@ -99,6 +100,18 @@ def display_timer(entry: dict) -> None:
     print(f"{entry["name"] + ":":15}{days} - {hours:02}:{minutes:02}:{seconds:02}.")
 
 
+def live_preview() -> None:
+    while True:
+        os.system("cls" if os.name == "nt" else "clear")
+        for entry in data:
+            display_timer(entry)
+            remaining = max(0, entry["cooldown"] - (time.time() - entry["start_time"]) )
+            if remaining <= 0:
+                # print(f"Cooldown duration for '{entry["name"]}' over, reseting now...")
+                reset_data(entry)
+                save_data(PATH, data)
+        time.sleep(1)
+
 if __name__ == "__main__":
     data = load_data(PATH)
     if len(argv) > 1 and argv[1] == "add":
@@ -110,6 +123,9 @@ if __name__ == "__main__":
     elif len(argv) > 1 and argv[1] == "reset":
         reset_entry()
         exit()
+    elif len(argv) > 1 and argv[1] == "live":
+            live_preview()
+            exit()
     
 
     changed = False

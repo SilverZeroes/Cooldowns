@@ -23,11 +23,54 @@ def save_data(path: Path, data: list) -> list:
 def reset_data(entry: dict) -> None:
     entry["start_time"] = time.time()
 
+def seconds(days, hours, minutes, seconds):
+    return (
+        days * SECONDS_PER_DAY +
+        hours * SECONDS_PER_HOUR +
+        minutes * SECONDS_PER_MINUTE +
+        seconds
+    )
+
 def add_entry() -> None:
-     pass
+    name = input("Enter timer name: ")
+
+    # Name validation.
+    if not name.strip():
+        print("Name cannot be empty.")
+        return
+    if any(entry["name"] == name for entry in data):
+        print("An event with this name already exists.")
+        return
+    name = name.strip()
+
+    # The user has the liberty to say 1 and minus 4 hours as long as the end duration is positive.
+    days = int(input("Enter amount of days: "))
+    hours = int(input("Enter amount of hours: "))
+    minutes = int(input("Enter amount of minutes: "))
+    seconds = int(input("Enter amount of seconds: "))
+
+    duration = abs(seconds(days, hours, minutes, seconds))
+
+    data.append({
+        "name": name,
+        "start_time": time.time(),
+        "cooldown": duration
+    })
+    
+    save_data(PATH, data)
 
 def remove_entry() -> None:
-     pass
+    print("Name")
+    for entry in data:
+        display_timer(entry)
+     
+    name = input("\nChoose an entry to delete: ")
+
+    for entry in data:
+            if name == entry["name"]:
+                print("Entry found, removing...")
+                data.remove(entry)
+                save_data(PATH, data)
 
 def reset_entry() -> None:
     print("Name")
@@ -38,8 +81,8 @@ def reset_entry() -> None:
 
     for entry in data:
         if name == entry["name"]:
-            reset_data(entry)
             print("Entry found, reseting...")
+            reset_data(entry)
             save_data(PATH, data)
 
 

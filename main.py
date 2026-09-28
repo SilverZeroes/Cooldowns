@@ -13,7 +13,16 @@ SECONDS_PER_DAY = 86400
 #     "cooldown": 10
 # }
 
-path = Path("cooldown.json")
+PATH = Path("cooldown.json")
+
+def load_data(path: Path) -> list:
+    with open(path, "r") as f:
+        data = json.load(f)
+    return data
+
+def save_data(path: Path, data: list) -> list:
+     with open(path, "w") as f:
+        json.dump(data, f)
 
 def display_timer(entry: dict) -> None:
 
@@ -27,24 +36,42 @@ def display_timer(entry: dict) -> None:
     # print(f"Remaining time {days} days and {hours:02} hours and {minutes:02} minutes and {seconds:02} seconds.")
     print(f"{entry["name"] + ":":15} Remaining time {days} - {hours:02}:{minutes:02}:{seconds:02}.")
 
-with open(path, "r") as f:
+
+if __name__ == "__main__":
     changed = False
-    data = json.load(f)
+    data = load_data(PATH)
     for entry in data:
-        remaining = max(0, entry["cooldown"] - (time.time() - entry["start_time"]) )
-
-        if remaining <= 0:
-            print(f"Cooldown duration for '{entry["name"]}' over, reseting now...")
-            entry["start_time"] = time.time()
-            changed = True
+            remaining = max(0, entry["cooldown"] - (time.time() - entry["start_time"]) )
+    
+            if remaining <= 0:
+                print(f"Cooldown duration for '{entry["name"]}' over, reseting now...")
+                entry["start_time"] = time.time()
+                changed = True
 
     for entry in data:
-         display_timer(entry)
+        display_timer(entry)
 
-    if changed:    
-        with open(path, "w") as f:
-                json.dump(data, f)
-            # remaining = max(0, data["cooldown"] - (time.time() - data["start_time"]) )
+    if changed:
+         save_data(PATH, data)
+
+# with open(path, "r") as f:
+#     changed = False
+#     data = json.load(f)
+#     for entry in data:
+#         remaining = max(0, entry["cooldown"] - (time.time() - entry["start_time"]) )
+
+#         if remaining <= 0:
+#             print(f"Cooldown duration for '{entry["name"]}' over, reseting now...")
+#             entry["start_time"] = time.time()
+#             changed = True
+
+#     for entry in data:
+#          display_timer(entry)
+
+#     if changed:    
+#         with open(path, "w") as f:
+#                 json.dump(data, f)
+#             # remaining = max(0, data["cooldown"] - (time.time() - data["start_time"]) )
 
 
     

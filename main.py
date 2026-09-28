@@ -24,7 +24,7 @@ def save_data(path: Path, data: list) -> list:
 def reset_data(entry: dict) -> None:
     entry["start_time"] = time.time()
 
-def seconds(days: int, hours: int, minutes: int, seconds: int) -> int:
+def total_seconds(days: int, hours: int, minutes: int, seconds: int) -> int:
     return (
         days * SECONDS_PER_DAY +
         hours * SECONDS_PER_HOUR +
@@ -50,7 +50,7 @@ def add_entry() -> None:
     minutes = int(input("Enter amount of minutes: "))
     seconds = int(input("Enter amount of seconds: "))
 
-    duration = abs(seconds(days, hours, minutes, seconds))
+    duration = abs(total_seconds(days, hours, minutes, seconds))
 
     data.append({
         "name": name,
